@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import './App.css';
-import { Todolist } from './components/Todolist';
+import { TaskType, Todolist } from './components/Todolist';
 import { v1 } from 'uuid';
+import { AddItemForm } from './components/AddItemForm';
+
 
 export type FilterValuesType = 'all' | 'active' | 'completed';
 type TodoListType = {
   id: string,
   title: string,
   filter: FilterValuesType
+}
+type TaskStateType = {
+  [key: string]: Array<TaskType>
 }
 
 function App() {
@@ -48,14 +53,13 @@ function App() {
   let todoListId1 = v1();
   let todoListId2 = v1();
 
-  // let todoLists: Array<TodoListType> = [
   let [todoLists, setTodoLists] = useState<Array<TodoListType>>([
-    {id: todoListId1, title: "What to lern", filter: 'active'},
-    {id: todoListId2, title: "What to buy", filter: 'completed'}
+    {id: todoListId1, title: "What to lern", filter: 'all'},
+    {id: todoListId2, title: "What to buy", filter: 'all'}
   ])
 
   let removeTodoList = (todoListId: string) => {
-    debugger;
+    // debugger;
     let filteredTodoList = todoLists.filter(tl => tl.id !== todoListId);
     setTodoLists(filteredTodoList);
 
@@ -63,7 +67,7 @@ function App() {
     setTasks({...tasksObj});
   }
 
-  let [tasksObj, setTasks] = useState({
+  let [tasksObj, setTasks] = useState<TaskStateType>({
     [todoListId1]: [
       {id: v1(), title: "CSS", isDone: false},
       {id: v1(), title: "React", isDone: true},
@@ -76,16 +80,28 @@ function App() {
       {id: v1(), title: "ananas", isDone: false},
       {id: v1(), title: "kiwi", isDone: true},
     ],
-
   })
+
+  
+  function addTodoList(title:string) {
+    let todoList: TodoListType = {
+      id: v1(),
+      filter: 'all',
+      title: title
+    }
+    setTodoLists([todoList, ...todoLists]);
+    setTasks({
+      ...tasksObj,
+      [todoList.id]:[]
+    })
+}
 
   return (
     <div className="App">
+      <AddItemForm addItem={addTodoList} />
       {
         todoLists.map((tl) => {
-
-          let tasksForTodoList = tasksObj
-    [tl.id];
+          let tasksForTodoList = tasksObj[tl.id];
 
           if(tl.filter === 'completed') {
             tasksForTodoList = tasksForTodoList.filter(t => t.isDone === true)

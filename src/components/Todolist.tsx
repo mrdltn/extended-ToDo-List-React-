@@ -1,5 +1,7 @@
 import React, { ChangeEvent, KeyboardEvent, useState } from "react";
 import { FilterValuesType } from "../App";
+import { AddItemForm } from "./AddItemForm";
+
 
 export type TaskType = {
     id: string,
@@ -20,28 +22,6 @@ type PropsType = {
 }
 
 export function Todolist(props: PropsType) {
-    // debugger
-    const [newTaskTitle, setNewTaskTitle] = useState("");// локальный useState для временного хранения введенных данных, но если кликаем на +, то данные ухходят в глобальный useState в App-e.
-    const [error, setError] = useState<string | null>(null)
-
-    const onNewTitleChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setNewTaskTitle(e.currentTarget.value)
-    }
-    const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-        setError(null)
-        if (e.code === "Enter") {
-            props.addTask(newTaskTitle, props.id);
-            setNewTaskTitle("");
-        }
-    }
-    const addTask = () => {
-        if (newTaskTitle.trim() !== "") {
-            props.addTask(newTaskTitle.trim(), props.id);
-            setNewTaskTitle("");
-        } else {
-            setError('Title is required')
-        }
-    }
     const onAllClickHandler = () => props.changeFilter('all', props.id);
     const onActiveClickHandler = () => props.changeFilter('active', props.id);
     const onCompletedClickHandler = () => props.changeFilter('completed', props.id);
@@ -50,19 +30,20 @@ export function Todolist(props: PropsType) {
         props.removeTodoList(props.id)
     }
     
+    const addTask = (title: string) => {
+        // debugger
+        props.addTask(title, props.id)
+    }
+
+    function addTodoList(title:string) {
+
+    }
 
     return (
         <div>
             <h2>{props.title} <button onClick={removeTodoList}>X</button></h2> 
-            <div>
-                <input value={newTaskTitle} 
-                    onChange={onNewTitleChangeHandler}
-                    onKeyPress={onKeyPressHandler}
-                    className = { error ? 'error' : "" }
-                />
-                <button onClick={addTask}>+</button>
-                { error && <div className="error-message">{error}</div> }
-            </div>
+
+            <AddItemForm addItem={addTask} />
             <ul>
                 {
                     props.tasks.map(t => {
